@@ -11,3 +11,8 @@ annotate_variation.pl -v -downdb -buildver rheMac2 ensGene macaquedb
 annotate_variation.pl -v --buildver rheMac2 --downdb seq macaquedb/rheMac2_seq 
 retrieve_seq_from_fasta.pl macaquedb/rheMac2_ensGene.txt -seqdir macaquedb/rheMac2_seq -format ensGene -outfile macaquedb/rheMac2_ensGeneMrna.fa
 annotate_variation.pl -buildver rheMac2 -geneanno -dbtype ensgene input.txt macaquedb
+
+--? two different varians ?
+-- only 3000 genes?
+-- go by sample...
+
