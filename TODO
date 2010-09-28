@@ -1,18 +1,12 @@
 /Users/drio/projects/annotation/annovar
 
-rake
-  + check deps
-  + download 
-  + fix ref
-  + convert snp detect to annovar
-  + annotate 
-
 annotate_variation.pl -v -downdb -buildver rheMac2 ensGene macaquedb
 annotate_variation.pl -v --buildver rheMac2 --downdb seq macaquedb/rheMac2_seq 
 retrieve_seq_from_fasta.pl macaquedb/rheMac2_ensGene.txt -seqdir macaquedb/rheMac2_seq -format ensGene -outfile macaquedb/rheMac2_ensGeneMrna.fa
 annotate_variation.pl -buildver rheMac2 -geneanno -dbtype ensgene input.txt macaquedb
 
---? two different varians ?
--- only 3000 genes?
+-- add testing
+-- call with annovar  and ensembl
 -- go by sample...
+-- indels
 
