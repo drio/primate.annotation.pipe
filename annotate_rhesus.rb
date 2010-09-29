@@ -5,14 +5,22 @@ require 'ostruct'
 require 'pp'
 
 module Misc
-  def Misc.log(msg)
+  def log(msg)
     puts "#{Time.new}: #{msg}"
+  end
+
+  def usage(msg=nil, ec=1)
+    printf "UPS!: #{msg}\n\n" if msg
+    puts DATA.read
+    exit(ec)
   end
 end
 
 # Process user input arguments
 #
 class Arguments
+
+  include Misc
 
   def initialize(arguments) 
     @arguments = arguments
@@ -22,7 +30,7 @@ class Arguments
 
   def process
     if parsed_options? && arguments_valid? 
-      Misc.log "Ok.. ready"
+      log "Ok.. ready"
       run 
     else 
       usage
@@ -37,6 +45,8 @@ class Arguments
         SD_Data.new(@o.sum_file, @o.snp_file).convert_to("annovar")
       when "to_en_snps"
         SD_Data.new(@o.sum_file, @o.snp_file).convert_to("ensembl")
+      when "a_ensembl"
+        SNP_Effect_Predictor.new(@o.input_file, @o.species)
     end
   end
 
@@ -44,10 +54,11 @@ class Arguments
     # Specify options
     opts = OptionParser.new 
     opts.on('-h', '--help')      { usage }
-    opts.on("-a", "--action a")  {|a| @o.action = a }
-    opts.on("-s", "--summary s") {|s| @o.sum_file = s }
-    opts.on("-p", "--s_file p")  {|p| @o.snp_file = p }
+    opts.on("-a", "--action a")  {|a| @o.action     = a }
+    opts.on("-s", "--summary s") {|s| @o.sum_file   = s }
+    opts.on("-p", "--s_file p")  {|p| @o.snp_file   = p }
     opts.on("-n", "--n_file n")  {|n| @o.input_file = n }
+    opts.on("-e", "--specie e")  {|e| @o.species    = e }
             
     opts.parse!(@arguments) rescue return false
     true
@@ -60,7 +71,7 @@ class Arguments
         usage "Incorrect number of parameters." if @arg_size != 6
         usage "SNP file doesn't exist."         if !File.exists?(@o.snp_file)
       when "a_ensembl"
-        usage "Incorrect # of parameters." unless @arg_size == 4
+        usage "Incorrect # of parameters." unless @arg_size == 6
         usage "Input file does not exist." unless File.exists?(@o.input_file)
       else
         usage "Incorrect action."
@@ -68,10 +79,62 @@ class Arguments
     true
   end
 
-  def usage(msg=nil, ec=1)
-    printf "UPS!: #{msg}\n\n" if msg
-    puts DATA.read
-    exit(ec)
+end
+
+# Encapsulates the call to the perl script from ensembl that 
+# performs the necessary queries against ensembl to do the annotation
+#
+# snp_effect_predictor.pl -i input.ensembl.format.txt -o out.txt -s macaque
+#
+class SNP_Effect_Predictor
+  
+  include Misc
+
+  SCRIPT_NAME = "snp_effect_predictor.pl"
+  RANDOM_FILE = "/tmp/log.annotation.#{rand(1000)}.txt"
+
+  def initialize(i_fn, specie)
+    @input_fn = i_fn
+    # We have to make sure we have the perl script in our path
+    msg_not_found = "I can't find (#{SCRIPT_NAME}). Also, make sure it is executable."
+    usage msg_not_found if script_not_in_path?
+
+    msg_not_run = "I tried to run #{SCRIPT_NAME}, but I had a problem. "
+    msg_not_run << "Details in: #{RANDOM_FILE}"
+    usage msg_not_run unless running_not_fine?
+  end
+
+  def run
+    puts "#{SCRIPT_NAME} -i #{i_fn} -o #{i_fn}.annotated -s #{specie}"
+  end
+
+  private
+  
+  def script_not_in_path?
+    ENV['PATH'].split(':').each do |dir| 
+      f_path = dir + '/#{SCRIPT_NAME}'
+      return true if File.exists?(f_path) && File.executable?(f_path)
+    end
+    false
+  end
+
+  # Run the script in a shubshell and capture the stdout/err and the exit code
+  #
+  def running_not_fine?
+    output = "" 
+    # Try to run the script
+    system("#{SCRIPT_NAME} &> #{RANDOM_FILE}")
+    # If failed, dump the running attempt output to a file
+    if $?.exitstatus != 0
+      begin
+        File.open(RANDOM_FILE, "w") {|f| f.puts output}
+      rescue
+        usage "I cannot create log file: #{RANDOM_FILE}."
+      end
+      false
+    else
+      true
+    end 
   end
 end
 
@@ -186,6 +249,7 @@ Usage:
   -p: snps file from the sanger pipeline
   -i: indels file from the sanger pipeline 
   -n: input file for annotation
+  -e: species to use when annotating
 
 Valid actions:
 
@@ -199,4 +263,4 @@ Examples:
   $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p snps.csv > out.txt
 
   # Annotate a set of snps 
-  $ annotate_rhesus.rb -a a_ensembl -n ./input.txt > input.annotated.txt
+  $ annotate_rhesus.rb -a a_ensembl -n ./input.txt -e macaque > input.annotated.txt
