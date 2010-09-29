@@ -1,3 +1,12 @@
+
+1. Add support for single individual calls
+1. Prepare detailed explanation about how to run the pipeline
+1. Deploy in alkek
+2. and support for indels
+3. add support for jambory output
+4. explore annovar issues
+---------------------------------------------
+
 /Users/drio/projects/annotation/annovar
 
 annotate_variation.pl -v -downdb -buildver rheMac2 ensGene macaquedb
