@@ -1,7 +1,7 @@
 
-1. and support for indels
-1. Prepare detailed explanation about how to run the pipeline
-1. Deploy in alkek
+DONE 1. and support for indels
+DONE 1. Prepare detailed explanation about how to run the pipeline
+WWWW 1. Deploy in alkek
 2. add support for jambory output
 3. Add support for single individual calls
 4. explore annovar issues
