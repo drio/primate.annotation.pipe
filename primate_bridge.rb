@@ -95,7 +95,7 @@ class SD_Data
   def convert_to(o_type, indels=FALSE)
     log "loading summary."
     load_summary(indels)
-    log "#{@h_sum.size} snps loaded."
+    log "#{@h_sum.size} snps(indels=#{indels}) loaded."
 
     log "dumping input file in new format."
     dump_input_file(o_type)
