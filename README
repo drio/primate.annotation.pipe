@@ -1,0 +1,57 @@
+
+These set of tools implement a pipeline to perform annotation of primate data.
+The original input is SNP calls from our Sanger pipeline (SNP detector).
+
++ Requirements:
+
+  1. ruby interpreter
+  2. perl distribution with ensembl APi packages and its dependencies. 
+     I have an entry about it in this doc since it is not trivial.
+
++ Installation:
+
+1. Download the tools. You can clone with git or copy over the directory 
+to your destination machine.
+
+2. Add an entry in your path to the directory of the tools.
+
+  README
+  TODO
+  annotation.primate.diagram.graffle
+  annotation.primate.diagram.pdf
+  input.examples
+  primate_bridge.rb
+  run_snp_effect_predictor.sh
+  spread.sh
+
++ Execution flow #1 (Ensembl annotation of the substitutions):
+
+-- STEP 1: Convert data to ensembl format
+
+Make sure we have the SNPs calls and the summary data from the Sanger 
+pipeline. We will call them input.snps.txt and input.summary.txt.
+
+First we have to convert our snp list to ensembl format:
+
+  $ primate_bridge.rb -a to_en_snps -s input.summary.txt -p input.snps.txt \
+  > snps.ensembl.txt
+  2010-09-30 11:13:03 -0500: summary file: input.summary.txt
+  2010-09-30 11:13:03 -0500: snps file   : input.snps.txt
+  2010-09-30 11:13:03 -0500: loading summary.
+  2010-09-30 11:13:03 -0500: Processing summary file: input.summary.txt
+  2010-09-30 11:13:03 -0500: dumping input file in new format.
+  WARNING: 12 calls skipped (contig names) 
+
+At this point we should have in snps.ensembl.txt our snps ready to be annotated
+against ensembl.
+
+Notice the WARNING. This is because some snps were present in contigs with 
+"weird" contig names. For example: "modified".
+
+-- STEP 2: Perform the annotation
+
+  $ run_snp_effect_predictor.sh ./snps.ensembl.txt /tmp/libs macaque
+
+This step can take a few minutes since the tools is performing queries against 
+the ensembl database. Annotating 150 snps takes about 5 minutes for me.
+

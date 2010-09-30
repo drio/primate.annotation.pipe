@@ -6,7 +6,7 @@ require 'pp'
 
 module Misc
   def log(msg)
-    puts "#{Time.new}: #{msg}"
+    $stderr.puts "#{Time.new}: #{msg}"
   end
 
   def usage(msg=nil, ec=1)
@@ -30,7 +30,8 @@ class Arguments
 
   def process
     if parsed_options? && arguments_valid? 
-      log "Ok.. ready"
+      log "summary file : #{@o.sum_file}"
+      log "snps file    : #{@o.snp_file}"
       run 
     else 
       usage
@@ -58,7 +59,7 @@ class Arguments
             
     opts.parse!(@arguments) rescue return false
     true
-  end
+ end
 
   def arguments_valid?
     case @o.action
@@ -78,6 +79,8 @@ end
 #
 class SD_Data 
 
+  include Misc
+
   HEADER_FIRST_COLUMN = /SNP_ID/
   # The reference used for the calls (/data/genome/Mmul2) has
   # a contig not supported in NCBI ?
@@ -91,7 +94,9 @@ class SD_Data
 
   # Converts Sanger format to the annotation tool of choice
   def convert_to(o_type)
+    log "loading summary."
     load_summary
+    log "dumping input file in new format."
     dump_input_file(o_type)
     #dump_merged_sum_and_snps
   end
@@ -109,7 +114,8 @@ class SD_Data
   # Hash all the reference values for all the snps found
   #
   def load_summary
-    File.open(@sum_fn, "r").each do |l|
+    log "Processing summary file: #{@sum_fn}"
+    File.open(@sum_fn, "r").each_with_index do |l, i|
       data = l.split(",")
       next if data[0] =~ HEADER_FIRST_COLUMN
       add_sum_entry(data)
