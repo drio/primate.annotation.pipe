@@ -26,6 +26,7 @@ class Arguments
     @arguments = arguments
     @arg_size  = arguments.size
     @o         = OpenStruct.new
+    @o.indels  = FALSE
   end
 
   def process
@@ -42,9 +43,9 @@ class Arguments
   def run
     case @o.action
       when "to_an_snps"
-        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("annovar")
+        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("annovar", @o.indels)
       when "to_en_snps"
-        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("ensembl")
+        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("ensembl", @o.indels)
     end
   end
 
@@ -54,6 +55,7 @@ class Arguments
     opts.on('-h', '--help')      { usage }
     opts.on("-a", "--action a")  {|a| @o.action     = a }
     opts.on("-s", "--summary s") {|s| @o.sum_file   = s }
+    opts.on("-i", "--indels")    {    @o.indels     = TRUE }
             
     opts.parse!(@arguments) rescue return false
     true
@@ -61,8 +63,8 @@ class Arguments
 
   def arguments_valid?
     case @o.action
-      when /(to_en_snps|to_an_snps|to_en_indels)/
-        usage "Incorrect number of parameters." if @arg_size != 4
+      when /(to_en_snps|to_an_snps|to_an_indels)/
+        usage "Incorrect number of parameters." unless @arg_size == 4 || @arg_size == 5
         usage "Summary file doesn't exist."     if !File.exists?(@o.sum_file)
       else
         usage "Incorrect action."
@@ -108,7 +110,10 @@ class SD_Data
     sum_entry = Struct.new(:id, :chr, :coor, :ori, :flank, :ref, :var, :class, :length)
     se = if indels
       sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
-                    d[2], d[3], d[4], d[9], d[10], d[11], d[12])
+                    d[2], d[3], d[4], 
+                    # indels have multiple '-' in the ref allele, make sure it is only 1
+                    d[9].gsub(/-+/,'-'), d[10].gsub(/-+/,'-'), 
+                    d[11], d[12])
     else
       sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
                     d[2], d[3], d[4], d[7][0], d[7][2], 'subs', 0)
@@ -128,11 +133,16 @@ class SD_Data
     end
   end
 
-  # Chr	Start	End	Ref	Obs	Comments
+  # Ensembl format
+  # 12  1017956   1017956   T/A   +
+  # 8   12601     12600     -/C   +
+  # 8   12600     12602     CGT/- -
   #
+  # Annovar format
+  # chr2 99555161 99555161 A C comments:
   def format_line(data, o_type)
     case o_type
-      when "annovar" # chr2 99555161 99555161 A C comments:
+      when "annovar" 
         "chr" + data.chr + " " + data.coor + " " + data.coor + " " +
         data.ref  + " " + data.var + " comments: "
       when "ensembl" # chr2 99554095 99554095 G/A
@@ -161,8 +171,9 @@ Usage:
   annotate_rhesus.rb <options>    
 
   -h: help  
-  -a: action to perform (xxxxx)
+  -a: action to perform (to_en_snps|to_an_snps)
   -s: summary file from the sanger pipeline
+  -i: input are indel calls
 
 Valid actions:
 
@@ -173,3 +184,6 @@ Examples:
 
   # Convert to ensembl the snp calls from the sanger pipeline
   $ annotate_rhesus.rb -a to_en_snps -s summary.csv > out.txt
+
+  # Same but with indels
+  $ annotate_rhesus.rb -a to_en_snps -s indels.summary.csv -i > out.txt
