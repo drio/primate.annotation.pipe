@@ -1,9 +1,9 @@
 
-1. Add support for single individual calls
+1. and support for indels
 1. Prepare detailed explanation about how to run the pipeline
 1. Deploy in alkek
-2. and support for indels
-3. add support for jambory output
+2. add support for jambory output
+3. Add support for single individual calls
 4. explore annovar issues
 ---------------------------------------------
 

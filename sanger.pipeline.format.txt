@@ -1,0 +1,90 @@
+
+Snps file
+---------
+
+  SNP_ID,Chr,Coor,Ori,3-192,4-221,4-9.,7-116,7-162,7-185,8-022_WGA,8-173,J-72S,J-72T,h421_WGA,j-104B,j-104T,j-106S,j-106T_WGA,j-123,j-172,j-453,j-637,j239,l-627,
+  RH_220544_77_SD3_1,2,99513471,+,GG,GG,GG,GG,GG,GG,GG,GC,GG,GG,GG,GG,GG,GG,GG,GG,.,GG,GG,.,GG,
+  RH_220546_58_SD3_1,2,99514034,+,GG+,GG+,AA_,AA_,AA,AA_,AA_,GG+,AG+,AG_,AA_,AA_,AA_,AG_,AG_,AG+,GG+,AA_,AA_,GG+,AA,
+  RH_220547_248_SD3_1,2,99514445,+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TC+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,
+  RH_220548_194_SD3_1,2,99514712,+,TT,TT,TT,TT,TT,TT,TT,TC,TT,TT,TT_,TT,TT,TT,TT,TT,TT,TT_,TT_,TT,TT_,
+
+snps file (summary)
+-------------------
+
+  SNP_ID,Chr,Coor,Ori,Lflank.Rflank,dbSNP_ID,MAF,Allele,Valid,Type,RefSeqID,HUGO_Sym,RefAA,VarAA,Prot_Pos,Ref_Codon,Codon_Pos
+  RH_220544_77_SD3_1,chr2,99513471,+,ATTTAAAAAT.TGAAATACTA,novel,n/a,G/C,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+  RH_220546_58_SD3_1,chr2,99514034,+,TGATCTGCCC.CCTCGGCCTC,novel,n/a,A/G,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+  RH_220547_248_SD3_1,chr2,99514445,+,GAATTCATGC.TGAGATACAA,novel,n/a,T/C,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+  RH_220548_194_SD3_1,chr2,99514712,+,TTTCTAACAC.CTGCAGTAAA,novel,n/a,T/C,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+  RH_220549_219_SD3_1,chr2,99514883,+,GATTACACTA.GCTGACATGT,novel,n/a,C/T,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+
+Combined:
+---------
+
+  RH_220544_77_SD3_1,2,99513471,+,GG,GG,GG,GG,GG,GG,GG,GC,GG,GG,GG,GG,GG,GG,GG,GG,.,GG,GG,.,GG,RH_220546_58_SD3_1,2,99514034,+,GG+,GG+,AA_,AA_,AA,AA_,AA_,GG+,AG+,AG_,AA_,AA_,AA_,AG_,AG_,AG+,GG+,AA_,AA_,GG+,AA,
+  RH_220544_77_SD3_1,chr2,99513471,+,ATTTAAAAAT.TGAAATACTA,novel,n/a,G/C,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+
+  RH_220546_58_SD3_1,2,99514034,+,GG+,GG+,AA_,AA_,AA,AA_,AA_,GG+,AG+,AG_,AA_,AA_,AA_,AG_,AG_,AG+,GG+,AA_,AA_,GG+,AA,
+  RH_220546_58_SD3_1,chr2,99514034,+,TGATCTGCCC.CCTCGGCCTC,novel,n/a,A/G,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+
+  RH_220547_248_SD3_1,2,99514445,+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TC+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,TT+,
+  RH_220547_248_SD3_1,chr2,99514445,+,GAATTCATGC.TGAGATACAA,novel,n/a,T/C,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+
+In the indels snps:
+-------------------
+
+  SNP_ID,Chr,Coor,Ori,3-192,4-221,4-9.,7-116,7-162,7-185,8-022_WGA,8-173,J-72S,J-72T,h421_WGA,j-104B,j-104T,j-106S,j-106T_WGA,j-123,j-172,j-453,j-637,j239,l-627,
+  RH_220553_260i_SD3_1,2,99515900,+,--,--,--,-C+,--,--,-C+,--,--,--,--,--,--,--,--,--,--,-C+,--,--,--,
+  RH_220569_269i_SD3_1,2,99519728,+,.,.,.,CTCT,CTCT,CTCT,.,.,.,--CT,CTCT,.,.,.,.,.,.,.,.,.,.,
+  RH_220574_230i_SD3_1,2,99520900,+,--------,--------,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,----GTTT+,----GTTT+,----GTTT,GTTTGTTT+,GTTTGTTT,GTTTGTTT+,----GTTT+,----GTTT,.,--------,GTTTGTTT,GTTTGTTT+,--------,GTTTGTTT+,
+  RH_220580_358g_SD3_1,2,99522376,+,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTA----,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,
+
+In the indels summary:
+-----------------------
+
+  INDEL_ID,Chr,Coor,Ori,Lflank.Rflank,dbSNP_ID,Type,RefSeqID,HUGO_Sym,Ref_Allele,Var_Allele,Class,Len
+  RH_220553_260i_SD3_1,chr2,99515900,+,CTGGAGTAGGCC.TTTGCTCCAT,novel,unknown,unknown,unknown,-,C,Insertion,1
+  RH_220569_269i_SD3_1,chr2,99519728,+,GAATTGTTAT.TTTTGATGGT,novel,unknown,unknown,unknown,--,CT,Insertion,2
+  RH_220574_230i_SD3_1,chr2,99520900,+,AAAATCTGTT.AATGTAAGAC,novel,unknown,unknown,unknown,----,GTTT,Insertion,4
+  RH_220580_358g_SD3_1,chr2,99522376,+,ATATACTTAATTTA.TTGATTATTT,novel,unknown,unknown,unknown,TTTA,----,Deletion,4
+  RH_220587_330g_SD3_1,chr2,99524332,+,CACTGTATGC.CAGTACCCTT,novel,unknown,unknown,unknown,TTGCTGTTACCAGAGATACAAGCAAGGTACAA,--------------------------------,Deletion,32
+
+Combined:
+---------
+
+
+  RH_220553_260i_SD3_1,2,99515900,+,--,--,--,-C+,--,--,-C+,--,--,--,--,--,--,--,--,--,--,-C+,--,--,--,
+  RH_220553_260i_SD3_1,chr2,99515900,+,CTGGAGTAGGCC.TTTGCTCCAT,novel,unknown,unknown,unknown,-,C,Insertion,1
+
+
+  RH_220569_269i_SD3_1,2,99519728,+,.,.,.,CTCT,CTCT,CTCT,.,.,.,--CT,CTCT,.,.,.,.,.,.,.,.,.,.,
+  RH_220569_269i_SD3_1,chr2,99519728,+,GAATTGTTAT.TTTTGATGGT,novel,unknown,unknown,unknown,--,CT,Insertion,2
+
+
+  RH_220574_230i_SD3_1,2,99520900,+,--------,--------,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,----GTTT+,----GTTT+,----GTTT,GTTTGTTT+,GTTTGTTT,GTTTGTTT+,----GTTT+,----GTTT,.,--------,GTTTGTTT,GTTTGTTT+,--------,GTTTGTTT+,
+  RH_220574_230i_SD3_1,chr2,99520900,+,AAAATCTGTT.AATGTAAGAC,novel,unknown,unknown,unknown,----,GTTT,Insertion,4
+
+  RH_220580_358g_SD3_1,2,99522376,+,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTA----,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,
+  RH_220580_358g_SD3_1,chr2,99522376,+,ATATACTTAATTTA.TTGATTATTT,novel,unknown,unknown,unknown,TTTA,----,Deletion,4
+
+
+Ensembl input format:
+--------------------
+
+The data must contain all of the columns in the same order as appears below. Alleles should be separated by a "/", with the reference allele first. 
+
+eg: 
+1   881907    881906    -/C   +
+5   140532    140532    T/C   +
+12  1017956   1017956   T/A   +
+2   946507    946507    G/C   +
+14  19584687  19584687  C/T   -
+19  66520     66520     G/A   +
+8   150029    150029    A/T   +   
+
+An insertion is indicated by start coordinate = end coordinate + 1. For example, an insertion of "C" between nucleotides 12600 and 12601 on the forward strand of chromosome 8 is indicated as follows:
+8   12601     12600     -/C   +
+
+A deletion is indicated by the exact nucleotide coordinates. For example, a three base pair deletion of nucleotides 12600, 12601, and 12602 of the reverse strand of chromosome 8 will be:
+8   12600     12602     CGT/- -
+

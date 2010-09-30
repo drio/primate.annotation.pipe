@@ -31,7 +31,6 @@ class Arguments
   def process
     if parsed_options? && arguments_valid? 
       log "summary file : #{@o.sum_file}"
-      log "snps file    : #{@o.snp_file}"
       run 
     else 
       usage
@@ -55,7 +54,6 @@ class Arguments
     opts.on('-h', '--help')      { usage }
     opts.on("-a", "--action a")  {|a| @o.action     = a }
     opts.on("-s", "--summary s") {|s| @o.sum_file   = s }
-    opts.on("-p", "--s_file p")  {|p| @o.snp_file   = p }
             
     opts.parse!(@arguments) rescue return false
     true
@@ -63,10 +61,9 @@ class Arguments
 
   def arguments_valid?
     case @o.action
-      when /(to_en_snps|to_an_snps)/
-        usage "snp file not provided."          unless @o.snp_file
-        usage "Incorrect number of parameters." if @arg_size != 6
-        usage "SNP file doesn't exist."         if !File.exists?(@o.snp_file)
+      when /(to_en_snps|to_an_snps|to_en_indels)/
+        usage "Incorrect number of parameters." if @arg_size != 4
+        usage "Summary file doesn't exist."     if !File.exists?(@o.sum_file)
       else
         usage "Incorrect action."
     end
@@ -81,7 +78,7 @@ class SD_Data
 
   include Misc
 
-  HEADER_FIRST_COLUMN = /SNP_ID/
+  HEADER_FIRST_COLUMN = /SNP_ID|INDEL_ID/
   # The reference used for the calls (/data/genome/Mmul2) has
   # a contig not supported in NCBI ?
   MODIFIED_CHRM       = /modified/ 
@@ -93,9 +90,11 @@ class SD_Data
   end
 
   # Converts Sanger format to the annotation tool of choice
-  def convert_to(o_type)
+  def convert_to(o_type, indels=FALSE)
     log "loading summary."
-    load_summary
+    load_summary(indels)
+    log "#{@h_sum.size} snps loaded."
+
     log "dumping input file in new format."
     dump_input_file(o_type)
     #dump_merged_sum_and_snps
@@ -105,57 +104,40 @@ class SD_Data
 
   # Hash one single entry from the summary file
   #
-  def add_sum_entry(d)
-    sum_entry = Struct.new(:id, :chr, :coor, :ori, :flank, :allele)
-    se        = sum_entry.new(d[0], d[1].gsub(/chr/i, ''), d[2], d[3], d[4], d[7])
+  def add_sum_entry(d, indels)
+    sum_entry = Struct.new(:id, :chr, :coor, :ori, :flank, :ref, :var, :class, :length)
+    se = if indels
+      sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
+                    d[2], d[3], d[4], d[9], d[10], d[11], d[12])
+    else
+      sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
+                    d[2], d[3], d[4], d[7][0], d[7][2], 'subs', 0)
+    end
+    # Notice we can have multiple entries with the same SNP id and coor and
+    # position. Since the calls are exactly the same we can just allow collisions.
     @h_sum[se.chr + se.coor] = se
   end
 
   # Hash all the reference values for all the snps found
   #
-  def load_summary
-    log "Processing summary file: #{@sum_fn}"
+  def load_summary(indels)
     File.open(@sum_fn, "r").each_with_index do |l, i|
       data = l.split(",")
       next if data[0] =~ HEADER_FIRST_COLUMN
-      add_sum_entry(data)
-    end
-  end
-
-  # Given a SNP, dump the genotypes of all the samples with the
-  # reference genotype at the end
-  #
-  def merge_line(data)
-    chr, coor    = data[1], data[2]
-    snps_columns = data.join(" ").chomp
-    ref_column   = " (" + @h_sum[chr + coor].allele + ")"
-    snps_columns + ref_column
-  end
-
-  # Iterate over all the snps in the snp file (snp detector output)
-  # and print it adding the refence at the position of the SNP 
-  # (last column)
-  #
-  def dump_merged_sum_and_snps
-    puts "snp_id chrm coor orienta samples-genotype ref(alleles)"
-    File.open(@snps_fn, "r").each do |l|
-      data = l.split(",")
-      next if data[0] =~ HEADER_FIRST_COLUMN || l =~ /^\n/
-      $stdout.puts merge_line(data)
+      add_sum_entry(l.split(","), indels)
     end
   end
 
   # Chr	Start	End	Ref	Obs	Comments
   #
   def format_line(data, o_type)
-    chr, coor    = data[1], data[2]
-    ref          = @h_sum[chr + coor].allele[0]
-    obs          = @h_sum[chr + coor].allele[2]
     case o_type
       when "annovar" # chr2 99555161 99555161 A C comments:
-        "chr" + chr + " " + coor + " " + coor + " " + ref  + " " + obs + " comments: "
+        "chr" + data.chr + " " + data.coor + " " + data.coor + " " +
+        data.ref  + " " + data.var + " comments: "
       when "ensembl" # chr2 99554095 99554095 G/A
-        "chr" + chr + " " + coor + " " + coor + " " + ref  + "/" + obs
+        "chr" + data.chr + " " + data.coor + " " + data.coor + " " +
+        data.ref  + "/" + data.var
     end
   end
 
@@ -163,17 +145,10 @@ class SD_Data
   # chr2 99560072 99560072 G A comments: 
   #
   def dump_input_file(o_type)
-    skipped = 0
-    File.open(@snps_fn, "r").each do |l|
-      data = l.split(",")
-      next if data[0] =~ HEADER_FIRST_COLUMN || l =~ /^\n/
-      if data[1] =~ MODIFIED_CHRM
-        skipped = skipped + 1 
-        next
-      end
-      $stdout.puts format_line(data, o_type)
+    @h_sum.each do |k, e|
+      next if e.id =~ HEADER_FIRST_COLUMN
+      $stdout.puts format_line(e, o_type)
     end
-    $stderr.puts "WARNING: #{skipped} calls skipped (contig names) " if skipped > 0
   end
 end
 
@@ -188,8 +163,6 @@ Usage:
   -h: help  
   -a: action to perform (xxxxx)
   -s: summary file from the sanger pipeline
-  -p: snps file from the sanger pipeline
-  -i: indels file from the sanger pipeline 
 
 Valid actions:
 
@@ -199,4 +172,4 @@ Valid actions:
 Examples:
 
   # Convert to ensembl the snp calls from the sanger pipeline
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p snps.csv > out.txt
+  $ annotate_rhesus.rb -a to_en_snps -s summary.csv > out.txt
