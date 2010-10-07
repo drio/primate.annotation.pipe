@@ -32,6 +32,7 @@ class Arguments
   def process
     if parsed_options? && arguments_valid? 
       log "summary file : #{@o.sum_file}"
+      log "snp     file : #{@o.snp_file}"
       run 
     else 
       usage
@@ -43,9 +44,13 @@ class Arguments
   def run
     case @o.action
       when "to_an_snps"
-        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("annovar", @o.indels)
+        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("annovar", 
+                                                         @o.indels, 
+                                                         @o.individual)
       when "to_en_snps"
-        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("ensembl", @o.indels)
+        SD_Data.new(@o.sum_file, @o.snp_file).convert_to("ensembl",
+                                                         @o.indels,
+                                                         @o.individual)
     end
   end
 
@@ -55,7 +60,9 @@ class Arguments
     opts.on('-h', '--help')      { usage }
     opts.on("-a", "--action a")  {|a| @o.action     = a }
     opts.on("-s", "--summary s") {|s| @o.sum_file   = s }
+    opts.on("-f", "--snp_file f"){|f| @o.snp_file   = f }
     opts.on("-i", "--indels")    {    @o.indels     = TRUE }
+    opts.on("-p", "--focus_on")  {|p| @o.individual = p}
             
     opts.parse!(@arguments) rescue return false
     true
@@ -64,8 +71,10 @@ class Arguments
   def arguments_valid?
     case @o.action
       when /(to_en_snps|to_an_snps|to_an_indels)/
-        usage "Incorrect number of parameters." unless @arg_size == 4 || @arg_size == 5
+        usage "Incorrect number of parameters." unless @arg_size.to_s =~ /4|5|8|9/
         usage "Summary file doesn't exist."     if !File.exists?(@o.sum_file)
+        usage "Snp file doesn't exist."         if @o.individual && 
+                                                   !File.exists?(@o.snp_file)
       else
         usage "Incorrect action."
     end
@@ -77,7 +86,6 @@ end
 # Handles data form SNP detector (sanger pipeline)
 #
 class SD_Data 
-
   include Misc
 
   HEADER_FIRST_COLUMN = /SNP_ID|INDEL_ID/
@@ -89,20 +97,49 @@ class SD_Data
     @sum_fn  = sum_fn
     @snps_fn = snps_fn
     @h_sum   = {} # We'll save summary data
+    @h_snps  = {} # We'll snp data
   end
 
   # Converts Sanger format to the annotation tool of choice
-  def convert_to(o_type, indels=FALSE)
-    log "loading summary."
-    load_summary(indels)
-    log "#{@h_sum.size} snps(indels=#{indels}) loaded."
+  def convert_to(o_type, indels, individual)
+    
+    if individual # they want us to work on a single individual
+      col_individual = find_col_for_individual(ind)
+      load_snps(indels, col_individual)
+      log "dumping input file (For single individual) in new format."
+      dump_input_file_for_individual(o_type)
+    else
+      log "loading summary."
+      load_summary(indels)
+      log "#{@h_sum.size} snps(indels=#{indels}) loaded."
 
-    log "dumping input file in new format."
-    dump_input_file(o_type)
-    #dump_merged_sum_and_snps
+      log "dumping input file in new format."
+      dump_input_file(o_type)
+    end
   end
 
   private
+  # Hash the snp information for the specific individual
+  #
+  def load_snps(indels, col_individual)
+    File.open(@snps_fn, "r").each_with_index do |l, i|
+      data = l.split(",")
+      next if data[0] =~ HEADER_FIRST_COLUMN
+      # Get the columns we need 
+      chr, coor, genotype = "chr" + data[1], data[2], data[col_individual]
+      @h_snps[chr + coor] = genotype
+    end
+  end
+
+  # Find what column has the genotype of the individual
+  #   
+  def find_col_for_individual(ind)
+    col_i = nil
+    File.open(@snps_fn).readlines[0].split(',').each_with_index do |i, pos|
+      col_i = pos if i == ind
+    end
+    raise "I couldn't find individual: #{ind}" unless col_i
+  end
 
   # Hash one single entry from the summary file
   #
@@ -160,6 +197,13 @@ class SD_Data
       $stdout.puts format_line(e, o_type)
     end
   end
+
+  def dump_input_file_for_individual(o_type)
+    @h_snps.each do |k, e|
+      next if e.id =~ HEADER_FIRST_COLUMN
+      $stdout.puts "#{k} -- #{e}" 
+    end
+  end
 end
 
 # MAIN
@@ -174,6 +218,8 @@ Usage:
   -a: action to perform (to_en_snps|to_an_snps)
   -s: summary file from the sanger pipeline
   -i: input are indel calls
+  -p: focus on a single individual
+  -f: snp file from the sanger pipeline
 
 Valid actions:
 
@@ -187,3 +233,11 @@ Examples:
 
   # Same but with indels
   $ annotate_rhesus.rb -a to_en_snps -s indels.summary.csv -i > out.txt
+
+  # Convert to ensembl the snp calls from the snager pipeline 
+  # (for a particular individual)
+  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p 1-173 -f snps.txt > out.txt
+
+  # Same for indels
+  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p 1-173 -f snps.txt -i > out.txt
+
