@@ -1,4 +1,19 @@
 
+Some info about the format of the genotype in the snp file from the sanger pipeline  (Thanks Kyle)
+-------------------------------------------------------------- --------------------------------------------------------------
+
+  "+"  means the genotypes seen on forward and reverse reads 
+       Agree, i.e, forward read = GG, reverse read = GG , results in GG+. 
+
+  "-"  means they don't agree, i.e. Forward read = GG, reverse = GA, results in a GG-
+       a genotype without the signs mean the it is seen on either forward or reverse read.
+
+  "nc" means snpdetector didn't make a call
+
+  "."  means no reads of that individual went through snpdetection.
+       These are probably poorly mapped reads.
+
+
 Snps file
 ---------
 
@@ -52,7 +67,6 @@ In the indels summary:
 Combined:
 ---------
 
-
   RH_220553_260i_SD3_1,2,99515900,+,--,--,--,-C+,--,--,-C+,--,--,--,--,--,--,--,--,--,--,-C+,--,--,--,
   RH_220553_260i_SD3_1,chr2,99515900,+,CTGGAGTAGGCC.TTTGCTCCAT,novel,unknown,unknown,unknown,-,C,Insertion,1
 
@@ -63,6 +77,7 @@ Combined:
 
   RH_220574_230i_SD3_1,2,99520900,+,--------,--------,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,GTTTGTTT+,----GTTT+,----GTTT+,----GTTT,GTTTGTTT+,GTTTGTTT,GTTTGTTT+,----GTTT+,----GTTT,.,--------,GTTTGTTT,GTTTGTTT+,--------,GTTTGTTT+,
   RH_220574_230i_SD3_1,chr2,99520900,+,AAAATCTGTT.AATGTAAGAC,novel,unknown,unknown,unknown,----,GTTT,Insertion,4
+                            99520900 
 
   RH_220580_358g_SD3_1,2,99522376,+,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTA----,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,TTTATTTA,
   RH_220580_358g_SD3_1,chr2,99522376,+,ATATACTTAATTTA.TTGATTATTT,novel,unknown,unknown,unknown,TTTA,----,Deletion,4

@@ -23,3 +23,10 @@ annotate_variation.pl -buildver rheMac2 -geneanno -dbtype ensgene input.txt maca
 -- go by sample...
 -- indels
 
+Examples to run the pipeline:
+-----------------------------
+
+
+$ ./primate_bridge.rb -a to_en_snps -s  ../primate.annotation.pipe/input.examples/rhesus.snp_detector.indels.txt -i
+$ ./primate_bridge.rb -a to_en_snps -s  ../primate.annotation.pipe/input.examples/rhesus.summary.snps.txt 
+

@@ -10,7 +10,7 @@ module Misc
   end
 
   def usage(msg=nil, ec=1)
-    printf "UPS!: #{msg}\n\n" if msg
+    printf "\nUPS!: #{msg}\n\n" if msg
     puts DATA.read
     exit(ec)
   end
@@ -31,8 +31,8 @@ class Arguments
 
   def process
     if parsed_options? && arguments_valid? 
-      log "summary file : #{@o.sum_file}"
-      log "snp     file : #{@o.snp_file}"
+      log "summary file : #{@o.sum_file}" if @o.sum_file
+      log "snp file : #{@o.snp_file}" if @o.snp_file
       run 
     else 
       usage
@@ -62,7 +62,7 @@ class Arguments
     opts.on("-s", "--summary s") {|s| @o.sum_file   = s }
     opts.on("-f", "--snp_file f"){|f| @o.snp_file   = f }
     opts.on("-i", "--indels")    {    @o.indels     = TRUE }
-    opts.on("-p", "--focus_on")  {|p| @o.individual = p}
+    opts.on("-p", "--focus_on p"){|p| @o.individual = p}
             
     opts.parse!(@arguments) rescue return false
     true
@@ -72,7 +72,8 @@ class Arguments
     case @o.action
       when /(to_en_snps|to_an_snps|to_an_indels)/
         usage "Incorrect number of parameters." unless @arg_size.to_s =~ /4|5|8|9/
-        usage "Summary file doesn't exist."     if !File.exists?(@o.sum_file)
+        usage "Summary file doesn't exist."     if @o.individual.nil? && 
+                                                   !File.exists?(@o.sum_file)
         usage "Snp file doesn't exist."         if @o.individual && 
                                                    !File.exists?(@o.snp_file)
       else
@@ -102,32 +103,40 @@ class SD_Data
 
   # Converts Sanger format to the annotation tool of choice
   def convert_to(o_type, indels, individual)
-    
+    log "loading summary."
+    load_summary(indels)
+    log "#{@h_sum.size} snps(indels=#{indels}) loaded."
+
     if individual # they want us to work on a single individual
-      col_individual = find_col_for_individual(ind)
+      log "Working in individual mode (#{individual})"
+      col_individual = find_col_for_individual(individual)
+      log "Loading Individual: #{individual} column: #{col_individual} "
       load_snps(indels, col_individual)
       log "dumping input file (For single individual) in new format."
-      dump_input_file_for_individual(o_type)
+      dump_input_file_for_individual(indels)
     else
-      log "loading summary."
-      load_summary(indels)
-      log "#{@h_sum.size} snps(indels=#{indels}) loaded."
-
       log "dumping input file in new format."
       dump_input_file(o_type)
     end
   end
 
   private
+  # Add a new snp entry into the hash of snps
+  # 
+  def add_snp_entry(data, indels, col_individual)
+    snp_entry = Struct.new(:chr, :coor, :ori, :genotype)
+    # Get the columns we need 
+    se    = snp_entry.new(data[1], data[2], data[3], data[col_individual])
+    @h_snps[se.chr + se.coor] = se
+  end
+
   # Hash the snp information for the specific individual
   #
   def load_snps(indels, col_individual)
     File.open(@snps_fn, "r").each_with_index do |l, i|
       data = l.split(",")
-      next if data[0] =~ HEADER_FIRST_COLUMN
-      # Get the columns we need 
-      chr, coor, genotype = "chr" + data[1], data[2], data[col_individual]
-      @h_snps[chr + coor] = genotype
+      next if data[0] =~ HEADER_FIRST_COLUMN || data.size == 1
+      add_snp_entry(data, indels, col_individual)
     end
   end
 
@@ -138,7 +147,8 @@ class SD_Data
     File.open(@snps_fn).readlines[0].split(',').each_with_index do |i, pos|
       col_i = pos if i == ind
     end
-    raise "I couldn't find individual: #{ind}" unless col_i
+    usage "I couldn't find individual: #{ind}" unless col_i
+    return col_i
   end
 
   # Hash one single entry from the summary file
@@ -146,11 +156,10 @@ class SD_Data
   def add_sum_entry(d, indels)
     sum_entry = Struct.new(:id, :chr, :coor, :ori, :flank, :ref, :var, :class, :length)
     se = if indels
-      sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
-                    d[2], d[3], d[4], 
+      sum_entry.new(d[0], d[1].gsub(/chr/i, ''), d[2], d[3], d[4], 
                     # indels have multiple '-' in the ref allele, make sure it is only 1
-                    d[9].gsub(/-+/,'-'), d[10].gsub(/-+/,'-'), 
-                    d[11], d[12])
+                    #d[9].gsub(/-+/,'-'), d[10].gsub(/-+/,'-'), 
+                    d[9], d[10], d[11], d[12])
     else
       sum_entry.new(d[0], d[1].gsub(/chr/i, ''), 
                     d[2], d[3], d[4], d[7][0], d[7][2], 'subs', 0)
@@ -184,25 +193,37 @@ class SD_Data
         data.ref  + " " + data.var + " comments: "
       when "ensembl" # chr2 99554095 99554095 G/A
         "chr" + data.chr + " " + data.coor + " " + data.coor + " " +
-        data.ref  + "/" + data.var
+        data.ref  + "/" + data.var + " " + data.ori
     end
   end
 
   # Dump annovar input file from SNP detector data
-  # chr2 99560072 99560072 G A comments: 
   #
   def dump_input_file(o_type)
-    @h_sum.each do |k, e|
-      next if e.id =~ HEADER_FIRST_COLUMN
-      $stdout.puts format_line(e, o_type)
+    @h_sum.each {|k, e| $stdout.puts format_line(e, o_type) }
+  end
+
+  def dump_input_file_for_individual(indels)
+    @h_snps.each do |k, e|
+      a1, a2 = indels ? process_indel_call(e) : [e.genotype[0], e.genotype[1]]
+      next if skip_snp?(e, a1, a2)
+      ref = @h_sum[e.chr + e.coor].ref
+      $stdout.puts "#{e.chr} #{e.coor} #{e.coor} #{ref} #{a2} #{e.ori}".gsub(/-+/, '-')
     end
   end
 
-  def dump_input_file_for_individual(o_type)
-    @h_snps.each do |k, e|
-      next if e.id =~ HEADER_FIRST_COLUMN
-      $stdout.puts "#{k} -- #{e}" 
-    end
+  # Skip snps if the genotype matches the reference, or the 
+  # sanger software couldn't make a call (no snps covering at that position)
+  def skip_snp?(e, a1, a2)
+    ref_at_loci = @h_sum[e.chr + e.coor].ref
+    a1 == '.' || (ref_at_loci == a1 && ref_at_loci == a2) ? true : false
+  end
+
+  # Extract the indel genotype call from a snp file entry
+  def process_indel_call(e)
+    cc = e.genotype.gsub(/[\+_]$/, '') # clean genotype call
+    return ['.', '.'] if cc[0] == '.'
+    [ cc[0,cc.size/2], cc[cc.size/2,cc.size-1] ]
   end
 end
 
@@ -236,8 +257,8 @@ Examples:
 
   # Convert to ensembl the snp calls from the snager pipeline 
   # (for a particular individual)
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p 1-173 -f snps.txt > out.txt
+  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173  > out.txt
 
   # Same for indels
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -p 1-173 -f snps.txt -i > out.txt
+  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173 -i > out.txt
 
