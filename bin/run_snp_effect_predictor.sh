@@ -16,7 +16,7 @@ input=$1
 en_mod_libs="$2"
 species=$3
 sd_main_path="`dirname ${BASH_SOURCE[0]}`"
-sd_bin="$sd_main_path/snp_effect_predictor.pl"
+sd_bin="$sd_main_path/../third-party/snp_effect_predictor.pl"
 
 [ ".$input" == "." ]       && error "I need an input file."
 [ ! -f "$input" ]          && error "Input file not found."
