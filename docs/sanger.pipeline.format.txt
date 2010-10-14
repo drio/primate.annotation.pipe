@@ -103,3 +103,55 @@ An insertion is indicated by start coordinate = end coordinate + 1. For example,
 A deletion is indicated by the exact nucleotide coordinates. For example, a three base pair deletion of nucleotides 12600, 12601, and 12602 of the reverse strand of chromosome 8 will be:
 8   12600     12602     CGT/- -
 
+Ensembl output format:
+----------------------
+
+2_99515607_C/T  2:99515607      ENSMMUG00000022533      ENSMMUT00000031714      INTRONIC        -       -       -       -
+2_99515607_C/T  2:99515607      ENSMMUG00000022533      ENSMMUT00000031713      INTRONIC        -       -       -       -
+2_99515799_T/A  2:99515799      ENSMMUG00000022533      ENSMMUT00000031714      INTRONIC        -       -       -       -
+2_99515799_T/A  2:99515799      ENSMMUG00000022533      ENSMMUT00000031713      INTRONIC        -       -       -       -
+2_99516432_G/A  2:99516432      ENSMMUG00000022533      ENSMMUT00000031714      SYNONYMOUS_CODING       1581    527     N       -
+2_99516432_G/A  2:99516432      ENSMMUG00000022533      ENSMMUT00000031713      SYNONYMOUS_CODING       1173    391     N       -
+
+LFF input format:
+----------------
+
+Validated SNPs	chrX:46244959	egeno.17573.SOL.frag vs. r1766.SOL.frag	SNPs	chrX	46244959	46244959	+	.	1	.	.	nonref allele=A;total coverage=5:10;goodcoverage=n/a;placement=3'UTR;gene=LOC709684;function=noInfo;ref_aa=.;var_aa=.;protein position=.;codon=.;	G
+
+Validated SNPs	chrX:134727677	egeno.17573.SOL.frag vs. r1766.SOL.frag	SNPs	chrX	134727677	134727677	+	.	1	.	.	nonref allele=T;total coverage=1:2;goodcoverage=n/a;placement=3'UTR;gene=CD40L_MACMU;function=CD40_ligand_(CD40-L)(Tumor_necrosis_factor_ligand_superfamily_member_5)(CD154_antigen)_[Contains_CD40_ligand,_membrane_form;CD40_ligand,_soluble_form]_[Source:UniProtKB/Swiss-Prot;Acc:P63304];ref_aa=.;var_aa=.;protein position=.;codon=.;	C
+
+Validated SNPs	chrX:70445183	egeno.17573.SOL.frag vs. r1766.SOL.frag	SNPs	chrX	70445183	70445183	+	.	1	.	.	nonref allele=T;total coverage=1:2;goodcoverage=n/a;placement=3'UTR;gene=TAF1;function=TAF1_RNA_polymerase_II,_TATA_box_binding_protein_(TBP)-associated_factor,_250kDa_[Source:HGNC_Symbol;Acc:11535];ref_aa=.;var_aa=.;protein position=.;codon=.;	C
+
+Another example from Gloria:
+---------------------------
+
+Original ensembl output:
+
+2_99516432_G/A  2:99516432      ENSMMUG00000022533 ENSMMUT00000031714      SYNONYMOUS_CODING       1581    527     N
+2_99516432_G/A  2:99516432      ENSMMUG00000022533 ENSMMUT00000031713      SYNONYMOUS_CODING       1173    391     N
+
+LFF:
+
+Annotated 
+SNP   
+2_99515799_T/A  
+Ensembl 
+SNP     
+chr2    
+99515799        
+99515799        
++       .       1       .       .       
+nonref allele=A;
+placement=intronic;
+gene_loc=-;
+aa_loc=-;
+aa=-;
+transcripts=-;      
+T
+
+Annotated SNP   2_99516432_G/A  Ensembl SNP     chr2    99516432        99516432        +       .       1       .       .       nonref allele=A;placement1=synonymous_coding;placement2=synonymous_coding;gene_loc1=1581;gene_loc2=1173;aa_loc1=527;aa_loc2=391;aa1=N;aa2=N;transcripts1=-;transcripts2=-;      G
+
+
+
+
+

@@ -27,6 +27,8 @@ Examples to run the pipeline:
 -----------------------------
 
 
-$ ./primate_bridge.rb -a to_en_snps -s  ../primate.annotation.pipe/input.examples/rhesus.snp_detector.indels.txt -i
-$ ./primate_bridge.rb -a to_en_snps -s  ../primate.annotation.pipe/input.examples/rhesus.summary.snps.txt 
+$ ./primate_bridge.rb -a to_en_snps -s  ./input.examples/rhesus.snp_detector.indels.txt -i
+$ ./primate_bridge.rb -a to_en_snps -s  ./input.examples/rhesus.summary.snps.txt 
 
+./primate_bridge.rb -a to_en_snps -f  ./input.examples/rhesus.snp_detector.indels.txt -s ./input.examples/rhesus.summary.indels.txt -i -p 3-192   
+./primate_bridge.rb -a to_en_snps -f  ./input.examples/rhesus.snp_detector.snps.txt -s ./input.examples/rhesus.summary.snps.txt -p 3-192   -h
