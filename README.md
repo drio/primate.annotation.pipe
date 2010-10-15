@@ -21,9 +21,10 @@ to your destination machine.
 
 At this point you should be able to use any of the tools:
 
-``
+<pre>
+$ ls bin/*
 -rwxr-xr-x  1 drio  staff   1.1K Oct 15 15:30 ensembl2lff.rb
 -rwxr-xr-x  1 drio  staff   3.1K Oct 14 10:55 primate_bridge.rb
 -rwxr-xr-x  1 drio  staff   1.1K Oct 14 11:17 run_snp_effect_predictor.sh
-``
+</pre>
 
