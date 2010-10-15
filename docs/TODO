@@ -2,13 +2,11 @@
 DONE 1. and support for indels
 DONE 1. Prepare detailed explanation about how to run the pipeline
 WWWW 1. Deploy in alkek
-2. Add support for single individual calls
-  + -flag_individual 1-127  
-  + pull individual haplotype
-  + pull reference genotype
-  + If SNP -> create snp entry for annotation
-3. add support for jambory output
+DONE. Add support for single individual calls
+DONE. add support for jambory output
 4. explore annovar issues
+
+NOTES:
 ---------------------------------------------
 
 /Users/drio/projects/annotation/annovar

@@ -1,57 +1,25 @@
 
-These set of tools implement a pipeline to perform annotation of primate data.
-The original input is SNP calls from our Sanger pipeline (SNP detector).
+These set of tools implement a pipeline to perform annotation of primate data 
+(Check diagram in docs/).  The original input is SNP calls from our Sanger 
+pipeline (SNP detector).
 
 + Requirements:
 
   1. ruby interpreter
   2. perl distribution with ensembl APi packages and its dependencies. 
-     I have an entry about it in this doc since it is not trivial.
 
 + Installation:
 
-1. Download the tools. You can clone with git or copy over the directory 
-to your destination machine.
+  1. Download the tools. You can clone with git or copy over the directory 
+  to your destination machine.
 
-2. Add an entry in your path to the directory of the tools.
+  2. Add an entry in your PATH to the bin directory.
 
-  README
-  TODO
-  annotation.primate.diagram.graffle
-  annotation.primate.diagram.pdf
-  input.examples
-  primate_bridge.rb
-  run_snp_effect_predictor.sh
-  spread.sh
+  At this point you should be able to use any of the tools:
 
-+ Execution flow #1 (Ensembl annotation of the substitutions):
+  -rwxr-xr-x  1 drio  staff   1.1K Oct 15 15:30 ensembl2lff.rb
+  -rwxr-xr-x  1 drio  staff   3.1K Oct 14 10:55 primate_bridge.rb
+  -rwxr-xr-x  1 drio  staff   1.1K Oct 14 11:17 run_snp_effect_predictor.sh
 
--- STEP 1: Convert data to ensembl format
 
-Make sure we have the SNPs calls and the summary data from the Sanger 
-pipeline. We will call them input.snps.txt and input.summary.txt.
 
-First we have to convert our snp list to ensembl format:
-
-  $ primate_bridge.rb -a to_en_snps -s input.summary.txt -p input.snps.txt \
-  > snps.ensembl.txt
-
-At this point we should have in snps.ensembl.txt our snps ready to be annotated
-against ensembl.
-
-If we have indels we can run:
-
-  $ primate_bridge.rb -i -a to_en_snps -s input.summary.txt -p input.snps.txt \
-  > snps.ensembl.txt
-
-'-i' Indicates the inputs are indels.
-
--- STEP 2: Perform the annotation
-
-  $ run_snp_effect_predictor.sh ./snps.ensembl.txt /tmp/libs macaque
-
-This step can take a few minutes since the tools is performing queries against 
-the ensembl database. Annotating 150 snps takes about 5 minutes for me.
-
-Notice that if any of the snps coordinates hits a non ensembl supported 
-contig you'll get a warning.
