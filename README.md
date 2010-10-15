@@ -4,15 +4,15 @@ primate annotation pipeline
 #### Introduction ####
 
 These set of tools implement a pipeline to perform annotation of primate data 
-(Check diagram in docs/).  The original input is SNP calls from our Sanger 
-pipeline (SNP detector).
+The original input is SNP calls from our Sanger pipeline (SNP detector). The
+typical data flow would look like this:
 
 [![Diagram](http://drio.github.com/primate.annotation.pipe/images/annotation.primate.diagram.png)](http://github.com/drio/primate.annotation.pipe)
 
 #### Requirements: ####
 
-  1. ruby interpreter
-  2. perl distribution with ensembl APi packages and its dependencies. 
+1. ruby interpreter
+2. perl distribution with ensembl APi packages and its dependencies. 
 
 #### Installation: ####
 
