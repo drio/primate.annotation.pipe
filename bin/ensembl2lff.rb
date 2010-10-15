@@ -1,18 +1,67 @@
+#!/usr/bin/env ruby19
+#
+require 'optparse'
+require 'ostruct'
+require 'pp'
+
 $: << File.join(File.dirname(File.dirname($0)), "lib")
 require 'load_libs'
 
-# Encapsulates a line of annotated data from ensembl
-# Examples:
+# Process user input arguments
 #
-# 2_99515799_T/A  2:99515799      ENSMMUG00000022533 ENSMMUT00000031713      INTRONIC        -       -       -       -
-#
-# 2_99516432_G/A  2:99516432      ENSMMUG00000022533 ENSMMUT00000031714      SYNONYMOUS_CODING       1581    527     N -
-# 2_99516432_G/A  2:99516432      ENSMMUG00000022533 ENSMMUT00000031713      SYNONYMOUS_CODING       1173    391     N -
-# 
-# Uploaded Variation, Location, Transcript, Consequence, Relative position in protein, Amino acid change, Corresponding Variation
-#
-class Ensembl_Line
-  def initialize(line)
+class Arguments
+
+  include Misc
+
+  def initialize(arguments) 
+    @arguments = arguments
+    @arg_size  = arguments.size
+    @o         = OpenStruct.new
+  end
+
+  def process
+    if parsed_options? && arguments_valid? 
+      run 
+    else 
+      usage
+    end
+  end 
+
+  private
+
+  def run
+    e_data = Ensembl_Annotated_Data.new
+    log "Iterating over input file" 
+    STDIN.each {|l| e_data.add(l) unless l =~ /^Up/ }
+    log "Converting to LFF"
+    puts e_data.to_lff
+  end
+
+  def parsed_options?
+    # Specify options
+    opts = OptionParser.new 
+    opts.on('-h', '--help')      { usage }
+            
+    opts.parse!(@arguments) rescue return false
+    true
+ end
+
+  def arguments_valid?
+    usage "Wrong number of arguments." unless @arg_size == 0
+    true
   end
 end
 
+# MAIN
+#
+Arguments.new(ARGV).process
+
+__END__
+Usage:
+  ensembl2lff.rb <option>
+
+  -h: help  
+
+Example(s):
+
+  $ cat ensembl.annotate.txt | ensembl2lff.rb > output.lff

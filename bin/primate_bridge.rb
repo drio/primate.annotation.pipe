@@ -98,15 +98,15 @@ Valid actions:
 Examples:
 
   # Convert to ensembl the snp calls from the sanger pipeline
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv > out.txt
+  $ primate_bridge.rb -a to_en_snps -s summary.csv > out.txt
 
   # Same but with indels
-  $ annotate_rhesus.rb -a to_en_snps -s indels.summary.csv -i > out.txt
+  $ primate_bridge.rb -a to_en_snps -s indels.summary.csv -i > out.txt
 
   # Convert to ensembl the snp calls from the snager pipeline 
   # (for a particular individual)
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173  > out.txt
+  $ primate_bridge.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173  > out.txt
 
   # Same for indels
-  $ annotate_rhesus.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173 -i > out.txt
+  $ primate_bridge.rb -a to_en_snps -s summary.csv -f snps.csv -p 1-173 -i > out.txt
 
