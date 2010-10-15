@@ -7,6 +7,8 @@ These set of tools implement a pipeline to perform annotation of primate data
 (Check diagram in docs/).  The original input is SNP calls from our Sanger 
 pipeline (SNP detector).
 
+[![Diagram](http://drio.github.com/primate.annotation.pipe/images/annotation.primate.diagram.png)](http://github.com/drio/primate.annotation.pipe)
+
 #### Requirements: ####
 
   1. ruby interpreter
