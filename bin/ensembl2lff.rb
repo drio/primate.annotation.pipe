@@ -20,7 +20,7 @@ class Arguments
   end
 
   def process
-    if parsed_options? && arguments_valid? 
+    if parsed_options? && arguments_valid? && !STDIN.tty?
       run 
     else 
       usage
