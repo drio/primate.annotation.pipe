@@ -3,7 +3,7 @@ primate annotation pipeline
 
 #### Introduction ####
 
-These set of tools implement a pipeline to perform annotation of primate data 
+These set of tools implement a pipeline to perform annotation of primate data.
 The original input is SNP calls from our Sanger pipeline (SNP detector). The
 typical data flow would look like this:
 
@@ -31,3 +31,5 @@ You should have 4 files as input files:
 2. snps.summary.txt  : Genotype call at the snp positions
 3. indels.txt        : Alleles at the indel positions.
 4. indels.summary.txt: Genotype call at the indel positions.
+
+
