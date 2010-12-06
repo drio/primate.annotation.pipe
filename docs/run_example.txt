@@ -1,0 +1,36 @@
+# I start with these 4 files:
+
+  $ head -2 *.txt
+  ==> indels.summary.txt <==
+  SNP_ID,Chr,Coor,Ori,Kalin_24033_WGA,Kalin_24038_WGA,Kalin_24041_WGA
+  KR_10474453_346i_SD3_3,16,56466514,+,#NAME?,--------------,#NAME?
+
+  ==> indels.txt <==
+  INDEL_ID,Chr,Coor,Ori,Lflank.Rflank,dbSNP_ID,Type,RefSeqID,HUGO_Sym,Ref_Allele,Var_Allele,Class,Len
+  KR_224252_40g_SD3_3,chr3,95568878,+,GGGGATGTGT.TGTCCTGCCT,novel,unknown,unknown,unknown,A,-,Deletion,1
+
+  ==> snps.summary.txt <==
+  SNP_ID,Chr,Coor,Ori,Lflank.Rflank,dbSNP_ID,MAF,Allele,Valid,Type,RefSeqID,HUGO_Sym,RefAA,VarAA,Prot_Pos,Ref_Codon,Codon_Pos
+  KR_224252_78_SD3_3,chr3,95568916,+,CTGACAGCCT.TGCCCTGCAC,novel,n/a,G/A,unknown,N/A,unknown,unknown,N/A,N/A,N/A,N/A,N/A
+
+  ==> snps.txt <==
+  SNP_ID,Chr,Coor,Ori,Kalin_24033_WGA,Kalin_24038_WGA,Kalin_24041_WGA
+  KR_224323_44_SD3_3,3,95528604,+,CT,CC_,TT+p
+
+# I first convert the SNPs I want to annotate to ensembl format (using snps.summary.txt):
+
+  $ primate_bridge.rb -a to_en_snps -s snps.summary.txt > snps.summary.ready.for.ensembl.txt
+  2010-12-06 14:59:16 -0600: summary file : snps.summary.txt
+  2010-12-06 14:59:16 -0600: loading summary.
+  2010-12-06 14:59:16 -0600: 826 snps(indels=false) loaded.
+  2010-12-06 14:59:16 -0600: dumping input file in new format. 
+
+# Annotate with ensembl
+
+  $ run_snp_effect_predictor.sh ./snps.summary.ready.for.ensembl.txt /hgsc_software/perl/perl-5.12.2/ensembl/ensembl macaque  /hgsc_software/perl/perl-5.12.2/bin/perl
+
+# Convert to lff format:
+
+  $ cat snps.summary.ready.for.ensembl.txt.annotated.ensembl.txt | ensembl2lff.rb >  snps.summary.ready.for.ensembl.txt.annotated.ensembl.lff
+  2010-12-06 16:50:13 -0600: Iterating over input file
+  2010-12-06 16:50:13 -0600: Converting to LFF
