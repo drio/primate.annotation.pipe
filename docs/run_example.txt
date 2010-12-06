@@ -17,6 +17,14 @@
   SNP_ID,Chr,Coor,Ori,Kalin_24033_WGA,Kalin_24038_WGA,Kalin_24041_WGA
   KR_224323_44_SD3_3,3,95528604,+,CT,CC_,TT+p
 
+# Let's make sure we have access to the pipeline
+
+  $ export PATH=$PATH:/stornext/snfs5/next-gen/drio-scratch/primate.annotation.pipe/bin
+
+# Let's make sure we have a access to a decent ruby version
+
+  $ export PATH=/stornext/snfs5/next-gen/drio-scratch/bb/local/bin:$PATH
+
 # I first convert the SNPs I want to annotate to ensembl format (using snps.summary.txt):
 
   $ primate_bridge.rb -a to_en_snps -s snps.summary.txt > snps.summary.ready.for.ensembl.txt
