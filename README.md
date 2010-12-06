@@ -21,12 +21,13 @@ to your destination machine.
 
 2. Add an entry in your PATH to the bin directory.
 
-At this point you should be able to use any of the tools:
+At this point you should be able to use any of the tools in bin.
 
-<pre>
-$ ls bin/*
--rwxr-xr-x  1 drio  staff   1.1K Oct 15 15:30 ensembl2lff.rb
--rwxr-xr-x  1 drio  staff   3.1K Oct 14 10:55 primate_bridge.rb
--rwxr-xr-x  1 drio  staff   1.1K Oct 14 11:17 run_snp_effect_predictor.sh
-</pre>
+#### Input files ####
 
+You should have 4 files as input files:
+
+1. snps.txt          : Alleles at the snps position for ALL the samples
+2. snps.summary.txt  : Genotype call at the snp positions
+3. indels.txt        : Alleles at the indel positions.
+4. indels.summary.txt: Genotype call at the indel positions.
