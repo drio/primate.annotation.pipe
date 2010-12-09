@@ -5,16 +5,17 @@ set -e
 error()
 {
   echo "Ups!: $1"
-  echo "`basename $0` <input_file> <path_to_ensembl_perl_libs> <species>"
+  echo "`basename $0` <input_file> <path_to_ensembl_perl_libs> <species> <perl_binary_path>"
   echo ""
   echo "Example:"
-  echo "$0 ./input.txt /tmp/ensembl_libs macaque"
+  echo "$0 ./input.txt /tmp/ensembl_libs macaque /bin/perl"
   exit 1
 }
 
 input=$1
 en_mod_libs="$2"
 species=$3
+perl="$4"
 sd_main_path="`dirname ${BASH_SOURCE[0]}`"
 sd_bin="$sd_main_path/../third-party/snp_effect_predictor.pl"
 
@@ -22,6 +23,7 @@ sd_bin="$sd_main_path/../third-party/snp_effect_predictor.pl"
 [ ! -f "$input" ]          && error "Input file not found."
 [ ".$en_mod_libs" == "." ] && error "path to ensembl libs not provided."
 [ ".$species" == "." ]     && error "species not provided"
+[ ".$perl" == "." ]        && error "perl binary not provided"
 
 # Necessary Ensembl perl modules to load
 #
@@ -42,5 +44,5 @@ do
 done
 
 echo "Running against ensembl ..."
-$sd_bin -i $input -o $input.annotated.ensembl.txt -s $species
+$perl $sd_bin -i $input -o $input.annotated.ensembl.txt -s $species
 echo "Done."
