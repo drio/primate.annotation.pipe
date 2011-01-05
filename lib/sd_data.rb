@@ -94,7 +94,7 @@ class SD_Data
   def load_summary(indels)
     File.open(@sum_fn, "r").each_with_index do |l, i|
       data = l.split(",")
-      next if data[0] =~ HEADER_FIRST_COLUMN
+      next if data[0] =~ HEADER_FIRST_COLUMN || data[0] =~ /^$/ 
       add_sum_entry(l.split(","), indels)
     end
   end
