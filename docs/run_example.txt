@@ -17,6 +17,9 @@
   SNP_ID,Chr,Coor,Ori,Kalin_24033_WGA,Kalin_24038_WGA,Kalin_24041_WGA
   KR_224323_44_SD3_3,3,95528604,+,CT,CC_,TT+p
 
+#####################################################
+# STEP O. Making sure you have access to the software
+#####################################################
 # Let's make sure we have access to the pipeline
 
   $ export PATH=$PATH:/stornext/snfs5/next-gen/drio-scratch/primate.annotation.pipe/bin
@@ -25,8 +28,10 @@
 
   $ export PATH=/stornext/snfs5/next-gen/drio-scratch/bb/local/bin:$PATH
 
+#################################################
+# STEP 1. Convert the SNP calls to ensembl format
+#################################################
 # I first convert the SNPs I want to annotate to ensembl format (using snps.summary.txt):
- man find | col -b | split -l 500 - xxx
 
   $ primate_bridge.rb -a to_en_snps -s snps.summary.txt > snps.summary.ready.for.ensembl.txt
   2010-12-06 14:59:16 -0600: summary file : snps.summary.txt
@@ -51,6 +56,10 @@
 # Now you will have one or multiple files named snps.summary.ready.for.ensembl.txt.NN, where 
 # NN is the number of the split. If the file is <999 you will have a single file: 
 # snps.summary.ready.for.ensembl.txt.00
+
+###########################################
+# STEP 2. Annotate the snps against ensembl
+###########################################
 #
 # Now, we can annotate those with ensembl (both the snps and the indels):
 # If you have multiple splits, run it multiple times.
@@ -63,6 +72,10 @@
 # If you have multiple snp files, you can concat them in one doing:
 
   $ cat file1 file2 ... fileN > ready_for_lff_conversion.txt
+
+###################################################
+# STEP 3. Convert the ensembl output to lff format
+###################################################
 
 # Finally, we convert the results to lff format.
 
