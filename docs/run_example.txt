@@ -48,8 +48,9 @@
 
   $ primate_bridge.rb -a to_en_snps -s snps.summary.txt | split -d -l 999 - snps.summary.ready.for.ensembl.txt
 
-# Now you will have one or multiple files named snps.summary.ready.for.ensembl.txt.##, where 
-# ## is the number of the split. If the file is <999 you will have a single file: snps.summary.ready.for.ensembl.txt.00
+# Now you will have one or multiple files named snps.summary.ready.for.ensembl.txt.NN, where 
+# NN is the number of the split. If the file is <999 you will have a single file: 
+# snps.summary.ready.for.ensembl.txt.00
 #
 # Now, we can annotate those with ensembl (both the snps and the indels):
 # If you have multiple splits, run it multiple times.
