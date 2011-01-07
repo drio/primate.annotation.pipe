@@ -26,6 +26,7 @@
   $ export PATH=/stornext/snfs5/next-gen/drio-scratch/bb/local/bin:$PATH
 
 # I first convert the SNPs I want to annotate to ensembl format (using snps.summary.txt):
+ man find | col -b | split -l 500 - xxx
 
   $ primate_bridge.rb -a to_en_snps -s snps.summary.txt > snps.summary.ready.for.ensembl.txt
   2010-12-06 14:59:16 -0600: summary file : snps.summary.txt
@@ -41,14 +42,28 @@
   2010-12-07 11:45:05 -0600: 111 snps(indels=true) loaded.
   2010-12-07 11:45:05 -0600: dumping input file in new format.
 
+# WARNING: The ensembl server only allow us to send 1000 lines per request. If you want to be 
+# safe you can modify the previous commands to make sure you have either one file <1000 or 
+# multiple files <1000:
+
+  $ primate_bridge.rb -a to_en_snps -s snps.summary.txt | split -d -l 999 - snps.summary.ready.for.ensembl.txt
+
+# Now you will have one or multiple files named snps.summary.ready.for.ensembl.txt.##, where 
+# ## is the number of the split. If the file is <999 you will have a single file: snps.summary.ready.for.ensembl.txt.00
+#
 # Now, we can annotate those with ensembl (both the snps and the indels):
+# If you have multiple splits, run it multiple times.
 
   $ run_snp_effect_predictor.sh ./snps.summary.ready.for.ensembl.txt /hgsc_software/perl/perl-5.12.2/ensembl/ensembl macaque  /hgsc_software/perl/perl-5.12.2/bin/perl
   ...
   $ run_snp_effect_predictor.sh ./indels.summary.ready.for.ensembl.txt /hgsc_software/perl/perl-5.12.2/ensembl/ensembl macaque  /hgsc_software/perl/perl-5.12.2/bin/perl
   ...
 
-# Finally, we convert the results to lff format:
+# If you have multiple snp files, you can concat them in one doing:
+
+  $ cat file1 file2 ... fileN > ready_for_lff_conversion.txt
+
+# Finally, we convert the results to lff format.
 
   $ cat snps.summary.ready.for.ensembl.txt.annotated.ensembl.txt | ensembl2lff.rb >  snps.summary.ready.for.ensembl.txt.annotated.ensembl.lff
   2010-12-06 16:50:13 -0600: Iterating over input file
