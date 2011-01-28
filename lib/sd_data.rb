@@ -129,9 +129,9 @@ class SD_Data
       # Dump an extra line with the original data from SNP detector
       # This is useful to save some of the info lost in the translation
       # I add a hash at the beginning so it can be easily filtered out
-      puts "##{e.chr} #{e.coor} #{e.genotype} #{e.ori}"
-      next if skip_snp?(e, a1, a2)
       ref = @h_sum[e.chr + e.coor].ref
+      puts "##{e.chr} #{e.coor} #{ref} #{e.genotype} #{e.ori}"
+      next if skip_snp?(e, a1, a2)
       $stdout.puts "#{e.chr} #{e.coor} #{e.coor} #{ref}/#{a2} #{e.ori}".gsub(/-+/, '-')
     end
   end
