@@ -134,6 +134,20 @@ Ensembl output format:
 2_99516432_G/A  2:99516432      ENSMMUG00000022533      ENSMMUT00000031714      SYNONYMOUS_CODING       1581    527     N       -
 2_99516432_G/A  2:99516432      ENSMMUG00000022533      ENSMMUT00000031713      SYNONYMOUS_CODING       1173    391     N       -
 
+The fifth column indicates the region on the gene where the SNP is located. This are the possible types:
+
+3PRIME_UTR (*)
+5PRIME_UTR (*)
+DOWNSTREAM
+INTRONIC
+NON_SYNONYMOUS_CODING (*)
+SPLICE_SITE (*)
+SYNONYMOUS_CODING
+Transcript
+UPSTREAM
+
+(*): Those are the SNPs that will have functional consequences.
+
 LFF input format:
 ----------------
 
@@ -171,8 +185,5 @@ transcripts=-;
 T
 
 Annotated SNP   2_99516432_G/A  Ensembl SNP     chr2    99516432        99516432        +       .       1       .       .       nonref allele=A;placement1=synonymous_coding;placement2=synonymous_coding;gene_loc1=1581;gene_loc2=1173;aa_loc1=527;aa_loc2=391;aa1=N;aa2=N;transcripts1=-;transcripts2=-;      G
-
-
-
 
 
