@@ -22,7 +22,7 @@ class SD_Data
   end
 
   # Converts Sanger format to the annotation tool of choice
-  def convert_to(o_type, indels, individual, dump_all)
+  def convert_to(o_type, indels, individual)
     log "loading summary."
     load_summary(indels)
     log "#{@h_sum.size} snps(indels=#{indels}) loaded."
@@ -126,6 +126,10 @@ class SD_Data
   def dump_input_file_for_individual(indels)
     @h_snps.each do |k, e|
       a1, a2 = indels ? process_indel_call(e) : [e.genotype[0], e.genotype[1]]
+      # Dump an extra line with the original data from SNP detector
+      # This is useful to save some of the info lost in the translation
+      # I add a hash at the beginning so it can be easily filtered out
+      puts "##{e.chr} #{e.coor} #{e.genotype} #{e.ori}"
       next if skip_snp?(e, a1, a2)
       ref = @h_sum[e.chr + e.coor].ref
       $stdout.puts "#{e.chr} #{e.coor} #{e.coor} #{ref}/#{a2} #{e.ori}".gsub(/-+/, '-')
@@ -137,14 +141,18 @@ class SD_Data
   # If -e, the user wants then all the calls
   def skip_snp?(e, a1, a2)
     ref_at_loci = @h_sum[e.chr + e.coor].ref
-    a1 == '.' || (ref_at_loci == a1 && ref_at_loci == a2) ? true : false
+    a1 == '.' || a1 == 'n' || (ref_at_loci == a1 && ref_at_loci == a2) ? true : false
   end
 
   # Extract the indel genotype call from a snp file entry
+  # TT : reads from one stand ONLY (look Ori column) support the TT call.
+  # TT+: BOTH strands support the evidence (Best case).
+  # TT_: The evidence from both strands is DIFFERENT. SNPdetector pics whatever he considers is the best call.
+  # nc : We had reads covering the locus, but the quality is not good so we did not call it.
+  # .  : I cannot make the call because there are no traces/reads covering the locus.
   def process_indel_call(e)
     cc = e.genotype.gsub(/[\+_]$/, '') # clean genotype call
     return ['.', '.'] if cc[0] == '.'
     [ cc[0,cc.size/2], cc[cc.size/2,cc.size-1] ]
   end
 end
-
