@@ -1,17 +1,38 @@
-
 Some info about the format of the genotype in the snp file from the sanger pipeline  (Thanks Kyle)
--------------------------------------------------------------- --------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 
-  "+"  means the genotypes seen on forward and reverse reads 
-       Agree, i.e, forward read = GG, reverse read = GG , results in GG+. 
+  Some background on the technology first (Disclaimer: I am not a biologist):
 
-  "-"  means they don't agree, i.e. Forward read = GG, reverse = GA, results in a GG-
+  The biologist design one primer per each strand of DNA. Then they perform the PRC against the
+  DNA product. Notice you start with molecules from both copies of the chromosomes. 
+  After the PCR and all the Chemistry "magic", you end up with intensity data from EACH strand. 
+  The signals from both strands is processed to determine what genotype call to make:
+
+  signal +: .....
+  signal -: .....
+
+  If you have two different alleles, you will see two clear different picks (Ideally). Now I am
+  going to go over all this possible options in the genotype report:
+
+  "+"  The genotype is confirmed from both strands.
+       Agree, i.e, forward read = GG, reverse read = GG , results in GG+.
+
+  "_"  means they don't agree, i.e. Forward read = GG, reverse = GA, results in a GG_
        a genotype without the signs mean the it is seen on either forward or reverse read.
+       SNP detector will select the best call.
 
-  "nc" means snpdetector didn't make a call
+  "nc" means snpdetector didn't make a call (There is no enough evidence).
 
   "."  means no reads of that individual went through snpdetection.
        These are probably poorly mapped reads.
+
+  So, the possible cases are (Let's assume a locus T in the reference genome):
+
+  TT : reads from one stand ONLY (look Ori column) support the TT call.
+  TT+: BOTH strands support the evidence (Best case).
+  TT_: The evidence from both strands is DIFFERENT. SNPdetector pics whatever he considers is the best call.
+  nc : We had reads covering the locus, but the quality is not good so we did not call it.
+  .  : I cannot make the call because there are no traces/reads covering the locus.
 
 
 Snps file

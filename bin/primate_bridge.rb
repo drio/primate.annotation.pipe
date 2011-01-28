@@ -14,10 +14,10 @@ class Arguments
   include Misc
 
   def initialize(arguments) 
-    @arguments = arguments
-    @arg_size  = arguments.size
-    @o         = OpenStruct.new
-    @o.indels  = FALSE
+    @arguments   = arguments
+    @arg_size    = arguments.size
+    @o           = OpenStruct.new
+    @o.indels    = FALSE
   end
 
   def process

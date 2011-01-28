@@ -22,7 +22,7 @@ class SD_Data
   end
 
   # Converts Sanger format to the annotation tool of choice
-  def convert_to(o_type, indels, individual)
+  def convert_to(o_type, indels, individual, dump_all)
     log "loading summary."
     load_summary(indels)
     log "#{@h_sum.size} snps(indels=#{indels}) loaded."
@@ -46,7 +46,7 @@ class SD_Data
   def add_snp_entry(data, indels, col_individual)
     snp_entry = Struct.new(:chr, :coor, :ori, :genotype)
     # Get the columns we need 
-    se    = snp_entry.new(data[1], data[2], data[3], data[col_individual])
+    se = snp_entry.new(data[1], data[2], data[3], data[col_individual])
     @h_snps[se.chr + se.coor] = se
   end
 
@@ -134,6 +134,7 @@ class SD_Data
 
   # Skip snps if the genotype matches the reference, or the 
   # sanger software couldn't make a call (no snps covering at that position)
+  # If -e, the user wants then all the calls
   def skip_snp?(e, a1, a2)
     ref_at_loci = @h_sum[e.chr + e.coor].ref
     a1 == '.' || (ref_at_loci == a1 && ref_at_loci == a2) ? true : false
